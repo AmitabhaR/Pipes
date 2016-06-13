@@ -7,7 +7,9 @@ public class PipeController : MonoBehaviour
     public int perfectAngle;
     public bool isMatched;
     public bool isInFieldOfView;
+    public bool angleFix;
     private int rotationAngle; // Required for safety in operation purposes.
+
 	// Use this for initialization
 	void Start () {
         rotationAngle = Mathf.Abs( (int) transform.rotation.eulerAngles.z );
@@ -16,7 +18,7 @@ public class PipeController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        if (rotationAngle == perfectAngle)
+        if ((rotationAngle == perfectAngle) || (angleFix && (rotationAngle + 180 == perfectAngle)))
             foreach (GameController.SpriteEntry spritePack in baseController.spriteStack)
                 if (spritePack.baseSprite == gameObject.GetComponent<SpriteRenderer>().sprite)
                 {
@@ -57,8 +59,8 @@ public class PipeController : MonoBehaviour
             if (spritePack.changeSprite == gameObject.GetComponent<SpriteRenderer>().sprite)
             {
                 gameObject.GetComponent<SpriteRenderer>().sprite = spritePack.baseSprite;
-                gameObject.transform.Rotate(new Vector3(0, 0, 180.00f));
-                if (rotationAngle + 180 >= 360) rotationAngle -= 180; else rotationAngle += 180;
+                gameObject.transform.Rotate(new Vector3(0, 0, ((angleFix) ? 90.00f : 180.00f) ));
+                if (rotationAngle + ((angleFix) ? 90 : 180) >= 360) rotationAngle -= ((angleFix) ? 90 : 180); else rotationAngle += ((angleFix) ? 90 : 180);
                 //if (GameController.gameMode == GameController.GAME_MODE_CLASSIC) baseController.pipe_counter--;
                 break;
             }

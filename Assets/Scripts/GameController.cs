@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
     public Sprite[] changeSprites;
     public Vector3 levelLoadPosition;
     public int TotalPipes;
-    public static int levelNumber = 1, gameMode = GAME_MODE_CLASSIC, difficultyLevel = DIFFICULTY_LEVEL_NORMAL;
+    public static int levelNumber = 4, gameMode = GAME_MODE_SURPRISE, difficultyLevel = DIFFICULTY_LEVEL_NORMAL;
     private int delayCounter;
     private int roundCounter;
     private int waveCounter;
@@ -88,12 +88,51 @@ public class GameController : MonoBehaviour
             else
                 if (waveCounter == maxWaves) Debug.Log("You won!");
                 else if (roundCounter == roundsPerWave) { waveCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD) maxPipeReset++; timeCounter = waitTime; roundCounter = pipe_counter = 0; RandomReset(); }
-                else { roundCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD && Random.Range(0,1) == 1) maxPipeReset++; timeCounter = waitTime; pipe_counter = 0; RandomReset(); }
+                else { roundCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD && Random.Range(0,1) == 1 && ((TotalPipes - maxPipeReset) > 1)) maxPipeReset++; timeCounter = waitTime; pipe_counter = 0; RandomReset(); }
+
+        if (delayCounter >= maxDelay)
+        {
+            Debug.Log("Time : " + timeCounter--);
+            delayCounter = 0;
+        }
+        else delayCounter += delayRate;
+
+        if (Application.isMobilePlatform && Application.platform != RuntimePlatform.WSAPlayerX64 && Application.platform != RuntimePlatform.WSAPlayerX86)
+            if (Input.touchCount > 0)
+            {
+                Touch curTouch = Input.GetTouch(0);
+
+                if (curTouch.phase == TouchPhase.Began)
+                {
+                    GameObject.FindWithTag("Input").transform.position = Camera.main.ScreenToWorldPoint(new Vector3(curTouch.position.x, curTouch.position.y, 10));
+                    GameObject.FindWithTag("Input").GetComponent<BoxCollider2D>().enabled = true;
+                }
+            }
+            else;
+        else if (Application.platform == RuntimePlatform.WSAPlayerX64 || Application.platform == RuntimePlatform.WSAPlayerX86)
+            if (Input.GetMouseButtonDown(0))
+            {
+                GameObject.FindWithTag("Input").transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+                GameObject.FindWithTag("Input").GetComponent<BoxCollider2D>().enabled = true;
+            }
+
+        // Check if any of the object is in the field of view.
+        if (GameObject.FindWithTag("FieldOfView").GetComponent<BoxCollider2D>().enabled)
+            foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("Pipe"))
+                if (gameObject.GetComponent<PipeController>() != null && gameObject.GetComponent<PipeController>().isInFieldOfView)
+                {
+                    GameObject.FindWithTag("FieldOfView").GetComponent<BoxCollider2D>().enabled = false;
+                    if (gameMode == GAME_MODE_CLASSIC)
+                        foreach (GameObject gameObj in GameObject.FindGameObjectsWithTag("Pipe"))
+                            if (gameObj.GetComponent<PipeController>() != null)
+                                if (!gameObject.GetComponent<PipeController>().isInFieldOfView) gameObj.GetComponent<BoxCollider2D>().enabled = false;
+                    break;
+                }
     }
 
     void FixedUpdate()
     {
-        if (delayCounter >= maxDelay)
+     /*   if (delayCounter >= maxDelay)
         {
             Debug.Log("Time : " + timeCounter--);
             delayCounter = 0;
@@ -130,7 +169,7 @@ public class GameController : MonoBehaviour
                             if (gameObj.GetComponent<PipeController>() != null)  
                                     if (!gameObject.GetComponent<PipeController>().isInFieldOfView) gameObj.GetComponent<BoxCollider2D>().enabled = false;
                     break;
-                }
+                }*/
     }
 
     void OnGUI()
@@ -151,7 +190,7 @@ public class GameController : MonoBehaviour
     void RandomReset()
     {
         int maxReset = /*(gameMode == GAME_MODE_CLASSIC) ? ((difficultyLevel == DIFFICULTY_LEVEL_HARD) ? Random.Range(-maxPipeReset, maxPipeReset) : Random.Range(0, maxPipeReset)) :*/ Random.Range(1, maxPipeReset + 1);
-        int[] usedIndexes = new int[(maxReset > 0) ? maxReset : 0];
+        int[] usedIndexes = new int[maxReset];
 
         for (int cntr = 0; cntr < usedIndexes.Length; cntr++) usedIndexes[cntr] = -1;
 
