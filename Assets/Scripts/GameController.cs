@@ -218,6 +218,7 @@ public class GameController : MonoBehaviour
                 {
                     selectedObject.GetComponent<PipeController>().isMatched = false;
                     selectedObject.SendMessage("RandomReset");
+                    selectedObject.SendMessage("EmphasizePipe");
                     usedIndexes[cntr - 1] = curIndex;
                 }
                 else /*if (difficultyLevel == DIFFICULTY_LEVEL_HARD || gameMode == GAME_MODE_SURPRISE)*/ goto repeat_iteration;

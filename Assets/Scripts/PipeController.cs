@@ -9,15 +9,29 @@ public class PipeController : MonoBehaviour
     public bool isInFieldOfView;
     public bool angleFix;
     private int rotationAngle; // Required for safety in operation purposes.
+    private bool isEmphasizeOn, isEmphasizing;
+    private Vector3 originScale = new Vector3(0.3933388f, 0.3933388f, 0.3933388f);
+    private Vector3 emphasizedScale = new Vector3(0.5933388f , 0.5933388f , 0.5933388f);
+    private float emphasizingSpeed = 25.00f;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         rotationAngle = Mathf.Abs( (int) transform.rotation.eulerAngles.z );
+        emphasizedScale = new Vector3(transform.localScale.x * emphasizedScale.x / originScale.x, transform.localScale.y * emphasizedScale.y / originScale.y, transform.localScale.z * emphasizedScale.z / originScale.z);
+        originScale = transform.localScale;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
+        if (isEmphasizeOn)
+            if (isEmphasizing)
+                if (transform.localScale == emphasizedScale) isEmphasizing = false;
+                else transform.localScale = Vector3.Lerp(transform.localScale, emphasizedScale, emphasizingSpeed * Time.fixedDeltaTime);
+            else
+                if (transform.localScale == originScale) isEmphasizeOn = false;
+                else transform.localScale = Vector3.Lerp(transform.localScale, originScale, emphasizingSpeed * Time.fixedDeltaTime);
+
         if ((rotationAngle == perfectAngle) || (angleFix && (rotationAngle + 180 == perfectAngle)))
             foreach (GameController.SpriteEntry spritePack in baseController.spriteStack)
                 if (spritePack.baseSprite == gameObject.GetComponent<SpriteRenderer>().sprite)
@@ -64,5 +78,10 @@ public class PipeController : MonoBehaviour
                 //if (GameController.gameMode == GameController.GAME_MODE_CLASSIC) baseController.pipe_counter--;
                 break;
             }
+    }
+
+    void EmphasizePipe()
+    {
+        isEmphasizeOn = isEmphasizing = true;
     }
 }
