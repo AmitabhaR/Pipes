@@ -32,7 +32,7 @@ public class PipeController : MonoBehaviour
                 if (transform.localScale == originScale) isEmphasizeOn = false;
                 else transform.localScale = Vector3.Lerp(transform.localScale, originScale, emphasizingSpeed * Time.fixedDeltaTime);
 
-        if ((rotationAngle == perfectAngle) || (angleFix && (rotationAngle + 180 == perfectAngle)))
+        if (!isMatched /* Required for peformance improvement.*/ && ((rotationAngle == perfectAngle) || (angleFix && ((rotationAngle / 90) % 2) == 0)))
             foreach (GameController.SpriteEntry spritePack in baseController.spriteStack)
                 if (spritePack.baseSprite == gameObject.GetComponent<SpriteRenderer>().sprite)
                 {

@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
     public Sprite[] changeSprites;
     public Vector3 levelLoadPosition;
     public int TotalPipes;
-    public static int levelNumber = 4, gameMode = GAME_MODE_SURPRISE, difficultyLevel = DIFFICULTY_LEVEL_NORMAL;
+    public static int levelNumber = 5, gameMode = GAME_MODE_SURPRISE, difficultyLevel = DIFFICULTY_LEVEL_NORMAL;
     private int delayCounter;
     private int roundCounter;
     private int waveCounter;
@@ -87,8 +87,8 @@ public class GameController : MonoBehaviour
             if (gameMode == GAME_MODE_CLASSIC) Debug.Log("You won!");
             else
                 if (waveCounter == maxWaves) Debug.Log("You won!");
-                else if (roundCounter == roundsPerWave) { waveCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD) maxPipeReset++; timeCounter = waitTime; roundCounter = pipe_counter = 0; RandomReset(); }
-                else { roundCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD && Random.Range(0,1) == 1 && ((TotalPipes - maxPipeReset) > 1)) maxPipeReset++; timeCounter = waitTime; pipe_counter = 0; RandomReset(); }
+                else if (roundCounter == roundsPerWave) { waveCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD) maxPipeReset++; roundCounter = pipe_counter = 0; RandomReset(); }
+                else { roundCounter++; if (difficultyLevel == DIFFICULTY_LEVEL_HARD && Random.Range(0,1) == 1 && ((TotalPipes - maxPipeReset) > 1)) maxPipeReset++; pipe_counter = 0; RandomReset(); }
 
         if (delayCounter >= maxDelay)
         {
@@ -216,7 +216,7 @@ public class GameController : MonoBehaviour
 
                 if (selectedObject != null && selectedObject.GetComponent<PipeController>() != null && selectedObject.GetComponent<PipeController>().isInFieldOfView)
                 {
-                    selectedObject.GetComponent<PipeController>().isMatched = false;
+                    //selectedObject.GetComponent<PipeController>().isMatched = false;
                     selectedObject.SendMessage("RandomReset");
                     selectedObject.SendMessage("EmphasizePipe");
                     usedIndexes[cntr - 1] = curIndex;
@@ -225,5 +225,6 @@ public class GameController : MonoBehaviour
             }
 
         /*if (gameMode == GAME_MODE_SURPRISE)*/ max_pipes = maxReset;
+        timeCounter = (max_pipes * LevelList.FindLevelWithId(gameMode, levelNumber).levelTime / ((TypeDefinations.LevelSurpriseModeData)LevelList.FindLevelWithId(gameMode, levelNumber)).maxPipesOnEntry) + ((difficultyLevel == DIFFICULTY_LEVEL_NORMAL) ? ((max_pipes * 6 / ((TypeDefinations.LevelSurpriseModeData)LevelList.FindLevelWithId(gameMode, levelNumber)).maxPipesOnEntry) + 1) : 0); // Relative time calculation.
     }
 }

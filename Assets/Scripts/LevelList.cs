@@ -9,7 +9,8 @@ public class LevelList {
         new TypeDefinations.LevelSurpriseModeData(1,10,2,3,5,10),
         new TypeDefinations.LevelSurpriseModeData(2,12,3,3,5,12),
         new TypeDefinations.LevelSurpriseModeData(3,10,3,5,5,9),
-        new TypeDefinations.LevelSurpriseModeData(4,10,4,2,5,10)
+        new TypeDefinations.LevelSurpriseModeData(4,10,4,2,5,10),
+        new TypeDefinations.LevelSurpriseModeData(5,12,5,2,6,10)
     });
 
     public static TypeDefinations.LevelData FindLevelWithId(int gameMode,int levelNumber)
